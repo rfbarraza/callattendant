@@ -71,8 +71,9 @@ class CallAttendant(object):
         self._caller_queue = queue.Queue()
 
         #  Hardware subsystem
-        status_indicators = self.config["STATUS_INDICATORS"]
-        if status_indicators == "GPIO":
+        self.status_indicators = self.config["STATUS_INDICATORS"]
+        self.callerid_indicator = None
+        if self.status_indicators == "GPIO":
             from hardware.indicators import ApprovedIndicator, BlockedIndicator
             #  Initialize the visual indicators (LEDs)
             self.approved_indicator = ApprovedIndicator(
@@ -81,22 +82,19 @@ class CallAttendant(object):
             self.blocked_indicator = BlockedIndicator(
                     self.config.get("GPIO_LED_BLOCKED_PIN"),
                     self.config.get("GPIO_LED_BLOCKED_BRIGHTNESS", 100))
-        elif status_indicators == "MQTT":
-            from hardware.mqttindicators import MQTTIndicator, MQTTIndicatorClient
+        elif self.status_indicators == "MQTT":
+            from hardware.mqttindicators import MQTTIndicator, MQTTIndicatorClient, MQTTCallerIdIndicator
             #  Initialize the MQTT client
             try:
-                MQTTIndicatorClient(self.config['MQTT_BROKER'],
-                                port=self.config['MQTT_PORT'],
-                                topic_prefix=self.config['MQTT_TOPIC_PREFIX'],
-                                username=self.config['MQTT_USERNAME'],
-                                password=self.config['MQTT_PASSWORD'])
+                self.mqtt_client = MQTTIndicatorClient(self.config)
             except KeyError as e:
                 print("MQTT Indicator configuration missing: {}".format(e))
                 sys.exit(1)
 
             self.approved_indicator = MQTTIndicator('Approved')
             self.blocked_indicator = MQTTIndicator('Blocked')
-        elif status_indicators == "NULL":
+            self.callerid_indicator = MQTTCallerIdIndicator()
+        elif self.status_indicators == "NULL":
             from hardware.nullgpio import DummyLED
             self.approved_indicator = DummyLED('Approved')
             self.blocked_indicator = DummyLED('Blocked')
@@ -219,6 +217,8 @@ class CallAttendant(object):
 
                 # Log every call to the database (and console)
                 call_no = self.logger.log_caller(caller, action, reason)
+                if (self.callerid_indicator is not None):
+                    self.callerid_indicator.display(caller, action, reason)
                 print("--> {} {}: {}".format(number, action, reason))
 
                 # Gather the data used to answer the call
@@ -279,6 +279,10 @@ class CallAttendant(object):
         print("-> Releasing resources")
         self.approved_indicator.close()
         self.blocked_indicator.close()
+        if (self.status_indicators == "MQTT"):
+            print("-> Stopping MQTT client")
+            self.mqtt_client.stop()
+
         print("Shutdown finished")
 
     def answer_call(self, actions, greeting, call_no, caller):

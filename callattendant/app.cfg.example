@@ -244,6 +244,14 @@ MQTT_TOPIC_PREFIX = "callattendant"
 # Username is optional, default is None
 #MQTT_USERNAME = None
 #MQTT_PASSWORD = None
+#MQTT_TIME_FORMAT: The format of the timestamp in the MQTT message. Valid values are: ISO, UNIX
+# ISO = "YYYY-MM-DD HH:MM:SS"
+# UNIX = Seconds since epoch (Usually: 1970-01-01 00:00:00)
+MQTT_TIME_FORMAT = "UNIX"
+#MQTT_CALLERID_FORMAT: The format of the callerid in the MQTT message. Valid values are: RAW, DISPLAY
+# DISPLAY uses the PHONE_DISPLAY_FORMAT to format the number
+# RAW uses the number from the provider
+MQTT_CALLERID_FORMAT = "RAW"
 
 # GPIO_LED_..._PIN: These values are the GPIO pin numbers attached to the LED indicators
 # GPIO_LED_..._BRIGHTNESS: These values are a percentage of brightness for the LED indicators when on.
