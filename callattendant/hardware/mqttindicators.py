@@ -29,7 +29,7 @@ import queue
 import json
 
 import paho.mqtt.client as mqtt
-from callattendant.userinterface.webapp import format_phone_no
+from common.utils import format_phone_no
 
 # Client singleton
 mqtt_client = None
@@ -109,7 +109,7 @@ class MQTTIndicatorClient(object):
 
         number = caller['NMBR']
         if (self.callerid_format == "DISPLAY"):
-            number = format_phone_no(number)
+            number = format_phone_no(number, self.config)
 
         message = {}
         message['TimeStamp'] = ts

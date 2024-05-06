@@ -31,7 +31,7 @@
 
 from datetime import datetime
 from pprint import pprint
-from screening.query_db import query_db
+from common.utils import query_db
 
 
 class Blacklist(object):

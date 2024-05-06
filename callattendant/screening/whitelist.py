@@ -33,7 +33,7 @@ from datetime import datetime
 from pprint import pprint
 import csv
 
-from screening.query_db import query_db
+from common.utils import query_db
 
 class Whitelist(object):
 
