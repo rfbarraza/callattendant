@@ -305,7 +305,7 @@ class CallAttendant(object):
                 if "greeting" in actions:
                     print(">> Playing greeting...", flush=True)
                     success, retval = self.modem.play_audio(greeting)
-                    if not success or (retval == 'off-hook'):
+                    if not success or (retval in ('off-hook', 'hang-up')):
                         return
 
                 # Record message

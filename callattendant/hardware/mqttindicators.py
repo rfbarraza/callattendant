@@ -75,7 +75,11 @@ class MQTTIndicatorClient(object):
         """
         while True:
             # Wait for a message to publish
-            topic, message = mqtt_queue.get()
+            try:
+                topic, message = mqtt_queue.get()
+            except queue.Empty:
+                continue
+
             # Exit thread if STOP message is received
             if topic == "STOP":
                 break
@@ -96,7 +100,7 @@ class MQTTIndicatorClient(object):
         message['State'] = state
         message['Period'] = period
         message['Count'] = count
-        self.mqtt_queue.put((topic, json.dumps(message)))
+        self.mqtt_queue.put_nowait((topic, json.dumps(message)))
 
     def queue_callerid(self, topic, caller, action, reason):
         """
@@ -117,7 +121,7 @@ class MQTTIndicatorClient(object):
         message['Number'] = number
         message['Action'] = action
         message['Reason'] = reason
-        self.mqtt_queue.put((topic, json.dumps(message)))
+        self.mqtt_queue.put_nowait((topic, json.dumps(message)))
 
     def publish(self, topic, message):
         """
