@@ -152,13 +152,13 @@ class Blacklist(object):
             :parma number: the number to look for
             :returns: True if found; and a string containing the reason
         """
-        query = "SELECT Reason FROM Blacklist WHERE PhoneNo=:number"
+        query = "SELECT Name, Reason FROM Blacklist WHERE PhoneNo=:number"
         args = {"number": number}
         results = query_db(self.db, query, args, False)
         if len(results) > 0:
-            return True, results[0][0]
+            return True, (results[0][1], results[0][0])
         else:
-            return False, ""
+            return False, None
 
     def get_number(self, number):
         query = "SELECT * FROM Blacklist WHERE PhoneNo = ?"

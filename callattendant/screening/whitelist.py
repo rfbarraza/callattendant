@@ -149,13 +149,13 @@ class Whitelist(object):
         return True
 
     def check_number(self, number):
-        query = "SELECT Reason FROM Whitelist WHERE PhoneNo=:number"
+        query = "SELECT Name, Reason FROM Whitelist WHERE PhoneNo=:number"
         args = {"number": number}
         results = query_db(self.db, query, args, False)
         if len(results) > 0:
-            return True, results[0][0]
+            return True, (results[0][1], results[0][0])
         else:
-            return False, ""
+            return False, None
 
     def get_number(self, number):
         query = "SELECT * FROM Whitelist WHERE PhoneNo = ?"

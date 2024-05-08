@@ -196,19 +196,25 @@ class CallAttendant(object):
                 # Check the whitelist
                 if not caller_permitted and "whitelist" in screening_mode:
                     print("> Checking whitelist(s)")
-                    is_whitelisted, reason = self.screener.is_whitelisted(caller)
+                    is_whitelisted, result = self.screener.is_whitelisted(caller)
                     if is_whitelisted:
                         caller_permitted = True
                         action = "Permitted"
+                        reason = result[0]
+                        if result[1] is not None:
+                            caller["NAME"] = result[1]
                         self.approved_indicator.blink()
 
                 # Now check the blacklist if not preempted by whitelist
                 if not caller_permitted and "blacklist" in screening_mode:
                     print("> Checking blacklist(s)")
-                    is_blacklisted, reason = self.screener.is_blacklisted(caller)
+                    is_blacklisted, result = self.screener.is_blacklisted(caller)
                     if is_blacklisted:
                         caller_blocked = True
                         action = "Blocked"
+                        reason = result[0]
+                        if result[1] is not None:
+                            caller["NAME"] = result[1]
                         self.blocked_indicator.blink()
 
                 if not caller_permitted and not caller_blocked:
