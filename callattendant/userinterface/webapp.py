@@ -166,8 +166,15 @@ def dashboard():
             wav_file=filepath))
 
     # Get top permitted callers
-    sql = """SELECT COUNT(Number), Number, Name
-        FROM CallLog
+    sql = """SELECT COUNT(Number), Number,
+        CASE
+            WHEN b.PhoneNo is not null then b.Name
+            WHEN c.PhoneNo is not null then c.Name
+            ELSE a.Name
+        END Name
+        FROM CallLog AS a
+        LEFT JOIN Whitelist AS b ON a.Number = b.PhoneNo
+        LEFT JOIN Blacklist AS c ON a.Number = c.PhoneNo
         WHERE Action IN ('Permitted', 'Screened')
         GROUP BY Number
         ORDER BY COUNT(Number) DESC LIMIT 10"""
@@ -181,8 +188,13 @@ def dashboard():
             name=row[2]))
 
     # Get top blocked callers
-    sql = """SELECT COUNT(Number), Number, Name
-        FROM CallLog
+    sql = """SELECT COUNT(Number), Number,
+        CASE
+            WHEN b.PhoneNo is not null then b.Name
+            ELSE a.Name
+        END Name
+        FROM CallLog AS a
+        LEFT JOIN Blacklist AS b ON a.Number = b.PhoneNo
         WHERE Action = 'Blocked'
         GROUP BY Number
         ORDER BY COUNT(Number) DESC LIMIT 10"""
