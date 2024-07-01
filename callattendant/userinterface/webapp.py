@@ -443,6 +443,8 @@ def calls_view(call_no):
 
         # Create a date object from the date time string
         date_time = datetime.strptime(row[12][:19], '%Y-%m-%d %H:%M:%S')
+        wl = row[7] == 'Y' or row[5] == 'Permitted'
+        bl = row[8] == 'Y' or row[5] == 'Blocked'
 
         caller.update(dict(
             call_no=row[0],
@@ -452,8 +454,8 @@ def calls_view(call_no):
             time=date_time.strftime('%I:%M %p'),
             action=row[5],
             reason=row[6],
-            whitelisted=row[7],
-            blacklisted=row[8],
+            whitelisted=wl,
+            blacklisted=bl,
             msg_no=row[9],
             msg_played=row[10],
             wav_file=filepath))
@@ -514,6 +516,7 @@ def callers_manage(call_no):
       a.CallLogID,
       a.Name,
       a.Number,
+      a.Action,
       CASE WHEN b.PhoneNo IS NULL THEN 'N' ELSE 'Y' END Whitelisted,
       CASE WHEN c.PhoneNo IS NULL THEN 'N' ELSE 'Y' END Blacklisted,
       CASE WHEN b.PhoneNo IS NOT NULL THEN b.Reason ELSE '' END WhitelistReason,
@@ -529,21 +532,23 @@ def callers_manage(call_no):
     if len(result_set) > 0:
         record = result_set[0]
         number = record[2]
+        wl = record[4] == 'Y' or record[3] == 'Permitted'
+        bl = record[5] == 'Y' or record[3] == 'Blocked'
         caller.update(dict(
             call_no=record[0],
             phone_no=format_phone_no(number, current_app.config["MASTER_CONFIG"]),
             name=record[1],
-            whitelisted=record[3],
-            blacklisted=record[4],
-            whitelist_reason=record[5],
-            blacklist_reason=record[6]))
+            whitelisted=wl,
+            blacklisted=bl,
+            whitelist_reason=record[6],
+            blacklist_reason=record[7]))
     else:
         caller.update(dict(
             call_no=call_no,
             phone_no='Number Not Found',
             name='',
-            whitelisted='N',
-            blacklisted='N',
+            whitelisted=False,
+            blacklisted=False,
             whitelist_reason='',
             blacklist_reason=''))
 
