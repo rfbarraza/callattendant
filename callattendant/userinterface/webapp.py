@@ -308,7 +308,16 @@ def calls():
             search_criteria = "WHERE Caller LIKE '%{}%'".format(search_text)
 
     # Get values used for pagination of the call log
-    sql = "SELECT COUNT(*), Number, Name Caller FROM CallLog {}".format(search_criteria)
+    sql = """SELECT COUNT(*), Number,
+            CASE
+                WHEN b.PhoneNo is not null then b.Name
+                WHEN c.PhoneNo is not null then c.Name
+                ELSE a.Name
+            END Caller
+            FROM CallLog AS a
+            LEFT JOIN Whitelist AS b ON a.Number = b.PhoneNo
+            LEFT JOIN Blacklist AS c ON a.Number = c.PhoneNo
+            {}""".format(search_criteria)
     g.cur.execute(sql)
     total = g.cur.fetchone()[0]
     page, per_page, offset = get_page_args(
