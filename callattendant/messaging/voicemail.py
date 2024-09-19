@@ -140,7 +140,7 @@ class VoiceMail:
             if digit == '1':
                 self.record_message(call_no, caller, self.config["VOICE_MAIL_LEAVE_MESSAGE_FILE"])
                 break
-            elif digit == '0':
+            elif digit == '0' and self.config["NEXTCALL"].is_enabled():
                 # Save caller to whitelist
                 self.whitelist.add_caller(caller, "Caller pressed 0")
                 self.modem.play_audio(voice_mail_callback_file)

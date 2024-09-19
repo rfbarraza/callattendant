@@ -99,11 +99,13 @@
         </ul>
       </div>
     </div>
-    <div>
-       <button id="permit-next-call-button" type="button" class="btn btn-primary">
-           <span class="text">Permit Next Call{% if permit_next %} (ON){% endif %}</span>
-       </button>
-    </div>
+    {% if permit_next_enabled %}
+      <div>
+        <button id="permit-next-call-button" type="button" class="btn btn-primary">
+            <span class="text">Permit Next Call{% if permit_next %} (ON){% endif %}</span>
+        </button>
+      </div>
+    {% endif %}
   </nav>
 
 

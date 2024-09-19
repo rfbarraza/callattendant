@@ -29,18 +29,22 @@ class NextCall(object):
     """Track state of the next call flag"""
     def __init__(self, config):
         self.flag_file = config.get("PERMIT_NEXT_CALL_FLAG")
-        self.state = os.path.exists(self.flag_file)
+        self.enabled = config.get("PERMIT_NEXT_CALL_ENABLED")
+        self.next_permitted = os.path.exists(self.flag_file)
+
+    def is_enabled(self):
+        return self.enabled
 
     def is_next_call_permitted(self):
-        return self.state
+        return self.next_permitted
 
     def toggle_next_call_permitted(self):
-        if self.state:
+        if self.next_permitted:
             os.remove(self.flag_file)
-            self.state = False
+            self.next_permitted = False
         else:
             with open(self.flag_file, 'w') as file:
                 file.write('Permit')
-            self.state = True
+            self.next_permitted = True
 
-        return self.state
+        return self.next_permitted

@@ -44,6 +44,7 @@ default_config = {
 
     "CALLERID_PATTERNS_FILE": 'cid_patterns.yaml',
 
+    "PERMIT_NEXT_CALL_ENABLED": True,
     "PERMIT_NEXT_CALL_FLAG": 'permitnextcall.flag',
 
     "BLOCKED_ACTIONS": ("answer", "greeting", "voice_mail"),

@@ -262,7 +262,8 @@ def dashboard():
             allowed=allowed_per_day.get(date_key, 0),
             screened=screened_per_day.get(date_key, 0)))
 
-    # Get state of permit_next_call flag
+    # Get state of permit_next_call
+    permit_next_enabled = app.config["NEXTCALL"].is_enabled()
     permit_next = app.config["NEXTCALL"].is_next_call_permitted()
 
     if not current_app.config["MASTER_CONFIG"].get("MODEM_ONLINE", True):
@@ -277,7 +278,8 @@ def dashboard():
         top_blocked=top_blocked,
         calls_per_day=calls_per_day,
         new_messages=new_messages,
-        permit_next = permit_next,
+        permit_next_enabled=permit_next_enabled,
+        permit_next=permit_next,
         total_calls='{:,}'.format(total_calls),
         blocked_calls='{:,}'.format(total_blocked),
         percent_blocked='{0:.0f}%'.format(percent_blocked))

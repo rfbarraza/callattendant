@@ -92,6 +92,9 @@ NOTIFICATIONS_FOLDER = "notifications"
 #            O: Unknown caller
 CALLERID_PATTERNS_FILE = 'cid_patterns.yaml'
 
+# PERMIT_NEXT_CALL_ENABLED: if True allows screened calls to press 0 for subsequent calls to be
+# permitted.
+PERMIT_NEXT_CALL_ENABLED = True
 # PERMIT_NEXT_CALL_FLAG: Temporary file, created and destroyed by the app,
 # to indicate whether the next incoming call should be permitted.
 PERMIT_NEXT_CALL_FLAG = 'permitnextcall.flag'
